@@ -152,6 +152,27 @@
             background: #f0f8ff;
         }
 
+        .destination-input {
+            margin-top: 15px;
+            display: none;
+            animation: fadeInDown 0.3s ease-in;
+        }
+
+        .destination-input.show {
+            display: block;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .passengers-container {
             margin-top: 15px;
         }
@@ -547,8 +568,12 @@
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="dest3" name="destination" value="기타" required>
-                            <label for="dest3">기타</label>
+                            <label for="dest3">장소명</label>
                         </div>
+                    </div>
+                    <div id="destinationInput" class="destination-input">
+                        <label for="customDestination">구체적인 장소</label>
+                        <input type="text" id="customDestination" name="customDestination" placeholder="행선지를 구체적으로 입력하세요 (예: 서울시청, 동대문구청 등)">
                     </div>
                 </div>
                 <div class="form-group">
@@ -816,6 +841,11 @@
             document.getElementById('vehicleLogForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('arrivalKm').addEventListener('input', validateKm);
             
+            // 행선지 라디오 버튼 이벤트 리스너
+            document.querySelectorAll('input[name="destination"]').forEach(radio => {
+                radio.addEventListener('change', handleDestinationChange);
+            });
+            
             document.querySelectorAll('input[type="radio"]').forEach(radio => {
                 radio.addEventListener('change', function() {
                     document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
@@ -829,6 +859,21 @@
                 const modals = document.querySelectorAll('.modal');
                 modals.forEach(modal => { if (event.target === modal) modal.style.display = 'none'; });
             });
+        }
+
+        function handleDestinationChange() {
+            const destinationInput = document.getElementById('destinationInput');
+            const customDestinationField = document.getElementById('customDestination');
+            const selectedValue = document.querySelector('input[name="destination"]:checked').value;
+            
+            if (selectedValue === '기타') {
+                destinationInput.classList.add('show');
+                customDestinationField.required = true;
+            } else {
+                destinationInput.classList.remove('show');
+                customDestinationField.required = false;
+                customDestinationField.value = '';
+            }
         }
 
         function generatePassengerFields() {
@@ -867,6 +912,12 @@
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
             
+            // 행선지 처리 - 기타 선택 시 구체적인 장소 사용
+            let destination = data.destination;
+            if (destination === '기타' && data.customDestination) {
+                destination = data.customDestination.trim();
+            }
+            
             const passengers = [];
             for (let i = 1; i <= data.passengerCount; i++) {
                 if(data[`passenger${i}`]) passengers.push(data[`passenger${i}`].trim());
@@ -881,7 +932,7 @@
                 vehicle: data.vehicle,
                 passengerCount: parseInt(data.passengerCount),
                 passengers: passengers,
-                destination: data.destination,
+                destination: destination,
                 purpose: data.purpose,
                 tripDate: data.tripDate,
                 departureTime: data.departureTime,
@@ -896,6 +947,8 @@
             document.getElementById('vehicleLogForm').reset();
             setCurrentDate();
             generatePassengerFields();
+            // 폼 리셋 후 기타 입력 필드 숨기기
+            document.getElementById('destinationInput').classList.remove('show');
         }
 
         window.showAddDriverModal = function() {
@@ -973,5 +1026,3 @@
     </script>
 </body>
 </html>
-
-
