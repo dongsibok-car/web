@@ -523,7 +523,6 @@
         <div class="alert alert-error" id="errorAlert"></div>
 
         <form id="vehicleLogForm">
-            <!-- 기본 정보 섹션 -->
             <div class="form-card">
                 <h2 class="section-title">
                     👤 기본 정보
@@ -550,7 +549,6 @@
                 </div>
             </div>
 
-            <!-- 운행 정보 섹션 -->
             <div class="form-card">
     <h2 class="section-title">
         🎯 운행 정보
@@ -582,7 +580,6 @@
     </div>
 </div>
 
-            <!-- 시간 및 거리 섹션 -->
             <div class="form-card">
                 <h2 class="section-title">
                     ⏰ 시간 및 거리
@@ -615,45 +612,13 @@
                 </div>
             </div>
 
-            <!-- 탑승자 섹션 -->
             <div class="form-card">
                 <h2 class="section-title">
                     👥 탑승자 명단
                 </h2>
                 <div id="passengersContainer" class="passengers-container">
-                    <!-- 동적으로 생성될 탑승자 입력 필드 -->
-                </div>
+                    </div>
             </div>
-
-            <!-- 관리 섹션 -->
-            <div class="form-card">
-                <h2 class="section-title">
-                    ⚙️ 관리
-                </h2>
-                <div class="management-section">
-                    <div class="management-item">
-                        <h3>운전자 관리</h3>
-                        <div class="item-list" id="driversList">
-                            <!-- 동적으로 생성될 운전자 목록 -->
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-secondary" onclick="showAddDriverModal()">
-                                ➕ 추가
-                            </button>
-                        </div>
-                    </div>
-                    <div class="management-item">
-                        <h3>차량 관리</h3>
-                        <div class="item-list" id="vehiclesList">
-                            <!-- 동적으로 생성될 차량 목록 -->
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-secondary" onclick="showAddVehicleModal()">
-                                🚙 추가
-                            </button>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="btn-group">
                     <button type="submit" class="btn btn-success">
@@ -662,41 +627,6 @@
                 </div>
                   </div>
         </form>
-    </div>
-
-    <!-- 모달창들 -->
-    <div id="addDriverModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>운전자 추가</h3>
-                <span class="close" onclick="closeModal('addDriverModal')">&times;</span>
-            </div>
-            <div class="form-group">
-                <label for="newDriverName">운전자 이름</label>
-                <input type="text" id="newDriverName" placeholder="이름을 입력하세요">
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary" onclick="addDriver()">추가</button>
-                <button type="button" class="btn btn-secondary" onclick="closeModal('addDriverModal')">취소</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="addVehicleModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>차량 추가</h3>
-                <span class="close" onclick="closeModal('addVehicleModal')">&times;</span>
-            </div>
-            <div class="form-group">
-                <label for="newVehicleNumber">차량번호</label>
-                <input type="text" id="newVehicleNumber" placeholder="예: 12가1234">
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary" onclick="addVehicle()">추가</button>
-                <button type="button" class="btn btn-secondary" onclick="closeModal('addVehicleModal')">취소</button>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -736,8 +666,6 @@
         }
         
         function updateUI() {
-            updateDriversList();
-            updateVehiclesList();
             updateDriverOptions();
             updateVehicleOptions();
         }
@@ -796,38 +724,13 @@
             });
         }
 
-        function updateDriversList() {
-            const container = document.getElementById('driversList');
-            container.innerHTML = '';
-            driversData.forEach(driver => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `<span>${driver}</span><button onclick="deleteDriver('${driver}')" title="삭제">🗑️</button>`;
-                container.appendChild(div);
-            });
-        }
-
-        function updateVehiclesList() {
-            const container = document.getElementById('vehiclesList');
-            container.innerHTML = '';
-            vehiclesData.forEach(vehicle => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `<span>${vehicle}</span><button onclick="deleteVehicle('${vehicle}')" title="삭제">🗑️</button>`;
-                container.appendChild(div);
-            });
-        }
-
         function setupEventListeners() {
             document.getElementById('passengerCount').addEventListener('change', generatePassengerFields);
             document.getElementById('vehicle').addEventListener('change', handleVehicleChange);
             document.getElementById('vehicleLogForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('arrivalKm').addEventListener('input', validateKm);
             
-            // 행선지 라디오 버튼 이벤트 리스너
-            document.querySelectorAll('input[name="destination"]').forEach(radio => {
-                radio.addEventListener('change', handleDestinationChange);
-            });
+            // 행선지 라디오 버튼 이벤트 리스너 (삭제됨)
             
             document.querySelectorAll('input[type="radio"]').forEach(radio => {
                 radio.addEventListener('change', function() {
@@ -837,26 +740,6 @@
                     this.closest('.radio-item').classList.add('checked');
                 });
             });
-
-            window.addEventListener('click', event => {
-                const modals = document.querySelectorAll('.modal');
-                modals.forEach(modal => { if (event.target === modal) modal.style.display = 'none'; });
-            });
-        }
-
-        function handleDestinationChange() {
-            const destinationInput = document.getElementById('destinationInput');
-            const customDestinationField = document.getElementById('customDestination');
-            const selectedValue = document.querySelector('input[name="destination"]:checked').value;
-            
-            if (selectedValue === '기타') {
-                destinationInput.classList.add('show');
-                customDestinationField.required = true;
-            } else {
-                destinationInput.classList.remove('show');
-                customDestinationField.required = false;
-                customDestinationField.value = '';
-            }
         }
 
         function generatePassengerFields() {
@@ -928,51 +811,7 @@ async function handleFormSubmit(e) {
     setCurrentDate();
     generatePassengerFields();
     
-            // 폼 리셋 후 기타 입력 필드 숨기기
-            document.getElementById('destinationInput').classList.remove('show');
-        }
-
-        window.showAddDriverModal = function() {
-            document.getElementById('addDriverModal').style.display = 'block';
-            document.getElementById('newDriverName').focus();
-        }
-
-        window.showAddVehicleModal = function() {
-            document.getElementById('addVehicleModal').style.display = 'block';
-            document.getElementById('newVehicleNumber').focus();
-        }
-
-        window.closeModal = function(modalId) { document.getElementById(modalId).style.display = 'none'; }
-
-        window.addDriver = async function() {
-            const name = document.getElementById('newDriverName').value.trim();
-            if (!name) return showError('운전자 이름을 입력해주세요.');
-            if (driversData.includes(name)) return showError('이미 등록된 운전자입니다.');
-            
-            await postData({ action: 'addDriver', data: { name } });
-            closeModal('addDriverModal');
-        }
-
-        window.addVehicle = async function() {
-            const number = document.getElementById('newVehicleNumber').value.trim();
-            if (!number) return showError('차량번호를 입력해주세요.');
-            if (vehiclesData.includes(number)) return showError('이미 등록된 차량입니다.');
-            
-            await postData({ action: 'addVehicle', data: { number } });
-            closeModal('addVehicleModal');
-        }
-
-        window.deleteDriver = async function(driverName) {
-            if (confirm(`'${driverName}' 운전자를 삭제하시겠습니까?`)) {
-                await postData({ action: 'deleteDriver', data: { name: driverName } });
-            }
-        }
-
-        window.deleteVehicle = async function(vehicleNumber) {
-            if (confirm(`'${vehicleNumber}' 차량을 삭제하시겠습니까?`)) {
-                await postData({ action: 'deleteVehicle', data: { number: vehicleNumber } });
-            }
-        }
+}
         
         // --- 유틸리티 함수들 (Alert, Loading 등) ---
         function showAlert(id, message, duration = 3000) {
@@ -1002,8 +841,6 @@ async function handleFormSubmit(e) {
             if (loadingDiv) loadingDiv.style.display = 'none';
         }
 
-        // 기존 viewAllLogs, exportData 함수 등은 logsData 변수를 사용하도록 수정하면 됩니다.
-        // (요청 시 제공되지 않았으므로 생략)
     </script>
 </body>
 </html>
