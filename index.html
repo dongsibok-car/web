@@ -552,52 +552,35 @@
 
             <!-- 운행 정보 섹션 -->
             <div class="form-card">
-                <h2 class="section-title">
-                    🎯 운행 정보
-                </h2>
-                <div class="form-group">
-                    <label>행선지</label>
-                    <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="radio" id="dest1" name="destination" value="관내" required>
-                            <label for="dest1">관내</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="dest2" name="destination" value="관외" required>
-                            <label for="dest2">관외</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="dest3" name="destination" value="기타" required>
-                            <label for="dest3">장소명</label>
-                        </div>
-                    </div>
-                    <div id="destinationInput" class="destination-input">
-                        <label for="customDestination">구체적인 장소</label>
-                        <input type="text" id="customDestination" name="customDestination" placeholder="행선지를 구체적으로 입력하세요 (예: 서울시청, 동대문구청 등)">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>운행목적</label>
-                    <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="radio" id="purpose1" name="purpose" value="이동지원" required>
-                            <label for="purpose1">이동지원</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="purpose2" name="purpose" value="후원" required>
-                            <label for="purpose2">후원</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="purpose3" name="purpose" value="프로그램" required>
-                            <label for="purpose3">프로그램</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="purpose4" name="purpose" value="기타" required>
-                            <label for="purpose4">기타</label>
-                        </div>
-                    </div>
-                </div>
+    <h2 class="section-title">
+        🎯 운행 정보
+    </h2>
+    <div class="form-group">
+        <label for="customDestination">행선지</label>
+        <input type="text" id="customDestination" name="destination" placeholder="행선지를 입력하세요 (예: 서울시청, 동대문구청 등)" required>
+    </div>
+    <div class="form-group">
+        <label>운행목적</label>
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" id="purpose1" name="purpose" value="이동지원" required>
+                <label for="purpose1">이동지원</label>
             </div>
+            <div class="radio-item">
+                <input type="radio" id="purpose2" name="purpose" value="후원" required>
+                <label for="purpose2">후원</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" id="purpose3" name="purpose" value="프로그램" required>
+                <label for="purpose3">프로그램</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" id="purpose4" name="purpose" value="기타" required>
+                <label for="purpose4">기타</label>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- 시간 및 거리 섹션 -->
             <div class="form-card">
@@ -905,48 +888,46 @@
             return true;
         }
 
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-            if (!validateKm()) return;
-            
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            
-            // 행선지 처리 - 기타 선택 시 구체적인 장소 사용
-            let destination = data.destination;
-            if (destination === '기타' && data.customDestination) {
-                destination = data.customDestination.trim();
-            }
-            
-            const passengers = [];
-            for (let i = 1; i <= data.passengerCount; i++) {
-                if(data[`passenger${i}`]) passengers.push(data[`passenger${i}`].trim());
-            }
-            
-            const departureKm = parseInt(data.departureKm) || 0;
-            const arrivalKm = parseInt(data.arrivalKm) || 0;
-            
-            const logData = {
-                id: Date.now(),
-                driver: data.driver,
-                vehicle: data.vehicle,
-                passengerCount: parseInt(data.passengerCount),
-                passengers: passengers,
-                destination: destination,
-                purpose: data.purpose,
-                tripDate: data.tripDate,
-                departureTime: data.departureTime,
-                arrivalTime: data.arrivalTime,
-                departureKm: departureKm,
-                arrivalKm: arrivalKm,
-                distance: arrivalKm - departureKm,
-                recordDate: new Date().toISOString()
-            };
-            
-            await postData({ action: 'addLog', data: logData });
-            document.getElementById('vehicleLogForm').reset();
-            setCurrentDate();
-            generatePassengerFields();
+async function handleFormSubmit(e) {
+    e.preventDefault();
+    if (!validateKm()) return;
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // 행선지 처리: 이제 'customDestination' 필드가 'destination'으로 직접 사용됩니다.
+    const destination = data.destination.trim();
+    
+    const passengers = [];
+    for (let i = 1; i <= data.passengerCount; i++) {
+        if(data[`passenger${i}`]) passengers.push(data[`passenger${i}`].trim());
+    }
+    
+    const departureKm = parseInt(data.departureKm) || 0;
+    const arrivalKm = parseInt(data.arrivalKm) || 0;
+    
+    const logData = {
+        id: Date.now(),
+        driver: data.driver,
+        vehicle: data.vehicle,
+        passengerCount: parseInt(data.passengerCount),
+        passengers: passengers,
+        destination: destination, // 수정된 부분
+        purpose: data.purpose,
+        tripDate: data.tripDate,
+        departureTime: data.departureTime,
+        arrivalTime: data.arrivalTime,
+        departureKm: departureKm,
+        arrivalKm: arrivalKm,
+        distance: arrivalKm - departureKm,
+        recordDate: new Date().toISOString()
+    };
+    
+    await postData({ action: 'addLog', data: logData });
+    document.getElementById('vehicleLogForm').reset();
+    setCurrentDate();
+    generatePassengerFields();
+    
             // 폼 리셋 후 기타 입력 필드 숨기기
             document.getElementById('destinationInput').classList.remove('show');
         }
