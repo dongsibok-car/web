@@ -593,11 +593,21 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="departureTime">출발시각</label>
-                        <input type="time" id="departureTime" name="departureTime" required>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="time" id="departureTime" name="departureTime" required style="flex-grow: 1;">
+                            <button type="button" class="btn btn-secondary" id="setDepartureTimeBtn" title="현재 시각으로 설정">
+                                ⏰
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="arrivalTime">도착시각</label>
-                        <input type="time" id="arrivalTime" name="arrivalTime" required>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="time" id="arrivalTime" name="arrivalTime" required style="flex-grow: 1;">
+                            <button type="button" class="btn btn-secondary" id="setArrivalTimeBtn" title="현재 시각으로 설정">
+                                ⏰
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row">
@@ -723,12 +733,31 @@
                 select.appendChild(option);
             });
         }
+        
+        // [추가된 함수] 현재 시각을 HH:MM 형식으로 반환
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+        // [추가된 함수 끝]
 
         function setupEventListeners() {
             document.getElementById('passengerCount').addEventListener('change', generatePassengerFields);
             document.getElementById('vehicle').addEventListener('change', handleVehicleChange);
             document.getElementById('vehicleLogForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('arrivalKm').addEventListener('input', validateKm);
+            
+            // [추가된 이벤트 리스너] 현재 시각 설정 버튼
+            document.getElementById('setDepartureTimeBtn').addEventListener('click', () => {
+                document.getElementById('departureTime').value = getCurrentTime();
+            });
+            
+            document.getElementById('setArrivalTimeBtn').addEventListener('click', () => {
+                document.getElementById('arrivalTime').value = getCurrentTime();
+            });
+            // [추가된 이벤트 리스너 끝]
             
             // 행선지 라디오 버튼 이벤트 리스너 (삭제됨)
             
