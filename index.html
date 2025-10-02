@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗 차량운행일지 (경량)</title>
+    <title>🚗 차량운행일지 (초경량)</title>
     <style>
         /* 1. 기본 설정 및 초기화: 필수 요소만 남김 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,6 +20,7 @@
 
         /* 4. 폼 요소 레이아웃 */
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-row-single { grid-template-columns: 1fr; } 
         .form-group { display: flex; flex-direction: column; }
         
         label { font-weight: 500; margin-bottom: 5px; font-size: 0.9rem; }
@@ -66,7 +67,7 @@
     <div class="container">
         <div class="header">
             <h1>🚗 차량운행일지</h1>
-            <p>차량 운행 기록을 간편하게 관리하세요</p>
+            <p>동대문시각특화장애인복지관</p>
         </div>
 
         <div class="alert alert-success" id="successAlert"></div>
@@ -75,22 +76,49 @@
         <form id="vehicleLogForm">
             <div class="form-card">
                 <h2 class="section-title">👤 기본 정보</h2>
+                
                 <div class="form-group">
                     <label for="vehicle">차량번호</label>
                     <select id="vehicle" name="vehicle" required>
                         <option value="">차량을 선택하세요</option>
+                        <option value="신스파크">신스파크(257고1416)</option>
+                        <option value="스파크">스파크(40보2224)</option>
+                        <option value="레이">레이(28저7467)</option>
+                        <option value="K스타렉스">K스타렉스(72마7689)</option>
+                        <option value="리프트스타렉스">리프트스타렉스(71더7566)</option>
+                        <option value="이카운티">이카운티(72버5995)</option>
                     </select>
                 </div>
-                <div class="form-row">
+
+                <div class="form-row form-row-single">
                     <div class="form-group">
-                        <label for="driver">운전자</label>
-                        <select id="driver" name="driver" required>
-                            <option value="">운전자를 선택하세요</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="passengerCount">인원수</label>
-                        <input type="number" id="passengerCount" name="passengerCount" min="1" max="50" value="1" required>
+                        <label for="driver">운전자 (선택 또는 직접 입력)</label>
+                        <input type="text" id="driver" name="driver" list="driverList" placeholder="운전자 선택 또는 입력" required>
+                        <datalist id="driverList">
+                            <option value="강지연">
+                            <option value="김미경">
+                            <option value="김예근">
+                            <option value="김진범">
+                            <option value="문보은">
+                            <option value="문승준">
+                            <option value="박경혜">
+                            <option value="박애란">
+                            <option value="박예인">
+                            <option value="박일규">
+                            <option value="송은교">
+                            <option value="여준형">
+                            <option value="오철수">
+                            <option value="옥수안">
+                            <option value="이광희">
+                            <option value="이경훈">
+                            <option value="임미진">
+                            <option value="임병수">
+                            <option value="장지예">
+                            <option value="진태진">
+                            <option value="최용근">
+                            <option value="허채영">
+                            <option value="허철민">
+                        </datalist>
                     </div>
                 </div>
             </div>
@@ -101,15 +129,18 @@
                     <label for="customDestination">행선지</label>
                     <input type="text" id="customDestination" name="destination" placeholder="행선지를 입력하세요" required>
                 </div>
+                
                 <div class="form-group">
-                    <label for="purpose">운행목적</label>
-                    <select id="purpose" name="purpose" required>
-                        <option value="">운행 목적을 선택하세요</option>
-                        <option value="이동지원">이동지원</option>
-                        <option value="후원">후원</option>
-                        <option value="프로그램">프로그램</option>
-                        <option value="기타">기타</option>
-                    </select>
+                    <label for="purpose">운행목적 (선택 또는 직접 입력)</label>
+                    <input type="text" id="purpose" name="purpose" list="purposeList" placeholder="운행 목적 선택 또는 입력" required>
+                    <datalist id="purposeList">
+                        <option value="이동지원">
+                        <option value="후원">
+                        <option value="프로그램">
+                        <option value="물품구입">물품구입</option>
+                        <option value="기관방문">기관방문</option>
+                        <option value="기타">
+                    </datalist>
                 </div>
             </div>
 
@@ -140,7 +171,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="departureKm">출발km</label>
-                        <input type="number" id="departureKm" name="departureKm" class="km-display" readonly>
+                        <input type="number" id="departureKm" name="departureKm" class="km-display" value="0" readonly> 
                     </div>
                     <div class="form-group">
                         <label for="arrivalKm">도착km</label>
@@ -151,7 +182,10 @@
 
             <div class="form-card">
                 <h2 class="section-title">👥 탑승자 명단</h2>
-                <div id="passengersContainer"></div>
+                <div class="form-group">
+                    <label for="passengers">탑승자 명단 (선택)</label>
+                    <input type="text" id="passengers" name="passengers" placeholder="이름을 쉼표(,)나 공백으로 구분하여 입력하세요">
+                </div>
             </div>
             
             <button type="submit" class="btn btn-success">💾 기록 저장</button>
@@ -160,56 +194,34 @@
 
     <script>
         // 🚨 단계 3에서 복사한 Apps Script URL을 여기에 붙여넣으세요!
+        // 이 URL은 차량의 최종 주행 거리(lastKm)만 반환하도록 서버 측 Apps Script가 수정되어야 합니다.
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIIY96bcOmVVCOj2pT012EXujB4JYEBfpZX9ZYcAWKfMYFmhp4MV4juE9V-DVw1Cx9Pg/exec';
 
-        let driversData = [];
-        let vehiclesData = [];
-        let vehiclesKmData = {};
-        let logsData = [];
+        // 차량별 최종 주행 거리 데이터를 저장할 캐시
+        let vehiclesKmCache = {};
 
         document.addEventListener('DOMContentLoaded', initializeApp);
 
-        async function initializeApp() {
-            showLoading('데이터를 불러오는 중...');
-            try {
-                const response = await fetch(SCRIPT_URL);
-                if (!response.ok) throw new Error('데이터 로드에 실패했습니다.');
-                
-                const data = await response.json();
-                driversData = data.drivers || [];
-                vehiclesData = data.vehicles || [];
-                vehiclesKmData = data.vehiclesKm || {};
-                logsData = data.logs || [];
-                
-                updateUI();
-                setCurrentDate();
-                generatePassengerFields();
-                setupEventListeners();
-            } catch (error) {
-                console.error('초기화 오류:', error);
-                showError('데이터를 불러오는 데 실패했습니다. 인터넷 연결을 확인해주세요.');
-            } finally {
-                hideLoading();
-            }
+        function initializeApp() {
+            // 초기 페이지 로드 시 네트워크 통신 제거
+            setCurrentDate();
+            setupEventListeners();
         }
         
-        function updateUI() {
-            updateDriverOptions();
-            updateVehicleOptions();
-        }
-
         async function postData(payload) {
             showLoading('저장하는 중...');
             try {
-                const response = await fetch(SCRIPT_URL, {
+                // Apps Script에 데이터를 보낼 때 'no-cors' 모드는 응답 상태를 알 수 없게 합니다.
+                await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 
-                showSuccess(payload.action.includes('delete') ? '삭제되었습니다.' : '저장되었습니다.');
-                await initializeApp();
+                showSuccess('저장되었습니다.');
+                // 저장 후 캐시된 최종 주행거리 데이터를 무효화합니다. (다음 차량 선택 시 새로고침 유도)
+                vehiclesKmCache = {};
             } catch (error) {
                 console.error('데이터 전송 오류:', error);
                 showError('데이터 저장에 실패했습니다.');
@@ -223,33 +235,6 @@
             const dateString = today.toISOString().split('T')[0];
             document.getElementById('tripDate').value = dateString;
         }
-
-        function updateDriverOptions() {
-            const select = document.getElementById('driver');
-            select.innerHTML = '<option value="">운전자를 선택하세요</option>';
-            driversData.forEach(driver => {
-                const option = document.createElement('option');
-                option.value = driver;
-                option.textContent = driver;
-                select.appendChild(option);
-            });
-        }
-
-        function updateVehicleOptions() {
-            const select = document.getElementById('vehicle');
-            select.innerHTML = '<option value="">차량을 선택하세요</option>';
-            vehiclesData.forEach(vehicle => {
-                const kmInfo = vehiclesKmData[vehicle];
-                let optionText = vehicle;
-                if (kmInfo && kmInfo.lastKm > 0) {
-                    optionText += ` (현재: ${kmInfo.lastKm.toLocaleString()}km)`;
-                }
-                const option = document.createElement('option');
-                option.value = vehicle;
-                option.textContent = optionText;
-                select.appendChild(option);
-            });
-        }
         
         function getCurrentTime() {
             const now = new Date();
@@ -259,7 +244,7 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('passengerCount').addEventListener('change', generatePassengerFields);
+            // 차량 선택 시 최종 주행 거리 로드 함수 호출
             document.getElementById('vehicle').addEventListener('change', handleVehicleChange);
             document.getElementById('vehicleLogForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('arrivalKm').addEventListener('input', validateKm);
@@ -273,22 +258,55 @@
             });
         }
 
-        function generatePassengerFields() {
-            const count = parseInt(document.getElementById('passengerCount').value) || 1;
-            const container = document.getElementById('passengersContainer');
-            container.innerHTML = '';
-            for (let i = 1; i <= count; i++) {
-                container.innerHTML += `<div class="form-group passenger-input"><label for="passenger${i}">탑승자 ${i}</label><input type="text" id="passenger${i}" name="passenger${i}" placeholder="이름을 입력하세요" required></div>`;
-            }
-        }
-
-        function handleVehicleChange() {
+        async function handleVehicleChange() {
             const selectedVehicle = document.getElementById('vehicle').value;
             const departureKmInput = document.getElementById('departureKm');
-            if (selectedVehicle && vehiclesKmData[selectedVehicle]) {
-                departureKmInput.value = vehiclesKmData[selectedVehicle].lastKm;
-            } else {
+            
+            if (!selectedVehicle) {
                 departureKmInput.value = 0;
+                return;
+            }
+
+            // 1. 캐시 확인
+            if (vehiclesKmCache[selectedVehicle] !== undefined) {
+                departureKmInput.value = vehiclesKmCache[selectedVehicle];
+                return;
+            }
+
+            // 2. 캐시에 없으면 네트워크 통신 시작
+            showLoading(`차량 ${selectedVehicle}의 최종 주행 거리를 불러오는 중...`);
+            try {
+                // 특정 차량의 최신 주행 거리만 요청하도록 Apps Script를 수정해야 합니다.
+                // 현재 스크립트는 모든 차량 정보를 반환한다고 가정하고, 여기서 필터링합니다.
+                const response = await fetch(SCRIPT_URL);
+                if (!response.ok) throw new Error('데이터 로드에 실패했습니다.');
+                
+                const data = await response.json();
+                const vehiclesKmData = data.vehiclesKm || {}; 
+                const lastKm = vehiclesKmData[selectedVehicle] ? vehiclesKmData[selectedVehicle].lastKm : 0;
+                
+                // 캐시 업데이트
+                for (const key in vehiclesKmData) {
+                    vehiclesKmCache[key] = vehiclesKmData[key].lastKm;
+                }
+                
+                departureKmInput.value = lastKm;
+                
+                // 차량 드롭다운 텍스트 업데이트 (선택 사항)
+                const select = document.getElementById('vehicle');
+                Array.from(select.options).forEach(option => {
+                    if (option.value === selectedVehicle) {
+                        let baseText = option.textContent.split(' (')[0];
+                        option.textContent = `${baseText} (현재: ${lastKm.toLocaleString()}km)`;
+                    }
+                });
+                
+            } catch (error) {
+                console.error('주행 거리 로드 오류:', error);
+                departureKmInput.value = 0;
+                showError('최종 주행 거리 로드에 실패했습니다. 출발 km를 직접 확인하여 입력하세요.');
+            } finally {
+                hideLoading();
             }
         }
 
@@ -311,10 +329,11 @@
             
             const destination = data.destination.trim();
             
-            const passengers = [];
-            for (let i = 1; i <= data.passengerCount; i++) {
-                if(data[`passenger${i}`]) passengers.push(data[`passenger${i}`].trim());
-            }
+            // 탑승자 명단 처리 로직
+            let passengersInput = data.passengers || '';
+            const passengers = passengersInput.split(/[\s,]+/).filter(p => p.trim() !== '');
+            // 인원수는 탑승자 배열의 길이 + 운전자 1명으로 설정
+            const passengerCount = passengers.length + 1; 
             
             const departureKm = parseInt(data.departureKm) || 0;
             const arrivalKm = parseInt(data.arrivalKm) || 0;
@@ -323,10 +342,10 @@
                 id: Date.now(),
                 driver: data.driver,
                 vehicle: data.vehicle,
-                passengerCount: parseInt(data.passengerCount),
-                passengers: passengers,
+                passengerCount: passengerCount, 
+                passengers: passengers, 
                 destination: destination,
-                purpose: data.purpose,
+                purpose: data.purpose, // 이제 입력 필드에서 값을 가져옵니다.
                 tripDate: data.tripDate,
                 departureTime: data.departureTime,
                 arrivalTime: data.arrivalTime,
@@ -337,9 +356,9 @@
             };
             
             await postData({ action: 'addLog', data: logData });
+            
             document.getElementById('vehicleLogForm').reset();
             setCurrentDate();
-            generatePassengerFields();
         }
         
         // --- 유틸리티 함수들 (Alert, Loading 등) ---
