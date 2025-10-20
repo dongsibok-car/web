@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗 차량운행일지 (초경량)</title>
+    <title>🚗 차량운행일지</title>
     <style>
-        /* 1. 기본 설정 및 초기화: 필수 요소만 남김 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: sans-serif; background: #f4f7f6; color: #333; line-height: 1.6; }
         .container { max-width: 700px; margin: 20px auto; padding: 0 15px; }
 
-        /* 2. 헤더 */
         .header { text-align: center; margin-bottom: 20px; }
         .header h1 { font-size: 2rem; margin-bottom: 5px; color: #007bff; }
 
-        /* 3. 카드 및 섹션 제목 */
         .form-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; border: 1px solid #ddd; }
         .section-title { font-size: 1.2rem; color: #333; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid #eee; }
 
-        /* 4. 폼 요소 레이아웃 */
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .form-row-single { grid-template-columns: 1fr; } 
         .form-group { display: flex; flex-direction: column; }
@@ -33,7 +29,6 @@
         }
         select:focus, input:focus { outline: none; border-color: #007bff; }
 
-        /* 5. KM 표시 및 버튼 */
         .km-display { background: #e9ecef !important; font-weight: bold !important; text-align: center !important; }
         
         .time-input-group { display: flex; gap: 5px; }
@@ -41,23 +36,44 @@
         .btn { padding: 10px 15px; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; transition: background-color 0.2s; }
         .btn-success { background: #28a745; color: white; width: 100%; padding: 12px; margin-top: 10px; }
         .btn-success:hover { background: #218838; }
+        .btn-success:disabled { background: #6c757d; cursor: not-allowed; }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-secondary:hover { background: #5a6268; }
 
-        /* 6. 알림 및 로딩 */
-        .alert { padding: 10px; border-radius: 4px; margin: 10px 0; font-weight: 500; display: none; }
+        .alert { padding: 12px; border-radius: 4px; margin: 10px 0; font-weight: 500; display: none; }
         .alert.show { display: block; }
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
         
         #loadingOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); color: white;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white;
             display: none; align-items: center; justify-content: center; z-index: 9999; font-size: 1.2rem;
+            flex-direction: column; gap: 15px;
         }
-        .loading-spinner { width: 18px; height: 18px; border: 2px solid #f3f3f3; border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-right: 10px; }
+        .loading-spinner { 
+            width: 40px; height: 40px; 
+            border: 4px solid rgba(255,255,255,0.3); 
+            border-top: 4px solid white; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 7. 반응형 */
+        .helper-text { font-size: 0.85rem; color: #666; margin-top: 3px; }
+        
+        .debug-info { 
+            background: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            border-radius: 4px; 
+            padding: 10px; 
+            margin: 10px 0; 
+            font-size: 0.85rem; 
+            font-family: monospace;
+            display: none;
+        }
+        .debug-info.show { display: block; }
+
         @media (max-width: 600px) {
             .form-row { grid-template-columns: 1fr; }
         }
@@ -72,6 +88,8 @@
 
         <div class="alert alert-success" id="successAlert"></div>
         <div class="alert alert-error" id="errorAlert"></div>
+        <div class="alert alert-warning" id="warningAlert"></div>
+        <div class="debug-info" id="debugInfo"></div>
 
         <form id="vehicleLogForm">
             <div class="form-card">
@@ -106,11 +124,11 @@
                             <option value="박애란">
                             <option value="박예인">
                             <option value="박일규">
-                            <option value="송은교">
+                            <option value="송은규">
                             <option value="여준형">
                             <option value="오철수">
                             <option value="옥수안">
-                            <option value="이광희">
+                            <option value="이광표">
                             <option value="이경훈">
                             <option value="임미진">
                             <option value="임병수">
@@ -138,8 +156,8 @@
                         <option value="이동지원">
                         <option value="후원">
                         <option value="프로그램">
-                        <option value="물품구입">물품구입</option>
-                        <option value="기관방문">기관방문</option>
+                        <option value="물품구입">
+                        <option value="기관방문">
                         <option value="기타">
                     </datalist>
                 </div>
@@ -172,7 +190,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="departureKm">출발km</label>
-                        <input type="number" id="departureKm" name="departureKm" class="km-display" value="0" readonly> 
+                        <input type="number" id="departureKm" name="departureKm" class="km-display" value="0" min="0">
+                        <span class="helper-text">자동 불러옴 (필요시 수정 가능)</span>
                     </div>
                     <div class="form-group">
                         <label for="arrivalKm">도착km</label>
@@ -186,46 +205,59 @@
                 <div class="form-group">
                     <label for="passengers">탑승자 명단 (선택)</label>
                     <input type="text" id="passengers" name="passengers" placeholder="이름을 쉼표(,)나 공백으로 구분하여 입력하세요">
+                    <span class="helper-text">운전자 제외, 승객만 입력</span>
                 </div>
             </div>
             
-            <button type="submit" class="btn btn-success">💾 기록 저장</button>
+            <button type="submit" class="btn btn-success" id="submitBtn">💾 기록 저장</button>
         </form>
     </div>
 
-    <script>
-        // 🚨 단계 3에서 복사한 Apps Script URL을 여기에 붙여넣으세요!
-        // 이 URL은 차량의 최종 주행 거리(lastKm)만 반환하도록 서버 측 Apps Script가 수정되어야 합니다.
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiehdumWsq4sYzTcnorDDwVtIS3eO6qDWZpmZOVVsj9uuWB0hp8sOXlV4cV8WUzBvB8Q/exec';
+    <div id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div id="loadingMessage">처리 중...</div>
+    </div>
 
-        // 차량별 최종 주행 거리 데이터를 저장할 캐시
+    <script>
+        // 🚨 여기에 Apps Script 웹 앱 URL을 붙여넣으세요!
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBP6897JrpcwuA-H0eU4RAWKnruJKauL8cdoh7b6G9TLfzjSBZfEzE_oGIFQ4j0gk7mw/exec';
+
         let vehiclesKmCache = {};
+        const DEBUG_MODE = false; // 디버깅이 필요하면 true로 변경
 
         document.addEventListener('DOMContentLoaded', initializeApp);
 
         function initializeApp() {
-            // 초기 페이지 로드 시 네트워크 통신 제거
             setCurrentDate();
             setupEventListeners();
+            debugLog('앱 초기화 완료');
         }
         
         async function postData(payload) {
             showLoading('저장하는 중...');
+            debugLog('POST 요청 시작: ' + JSON.stringify(payload));
+            
             try {
-                // Apps Script에 데이터를 보낼 때 'no-cors' 모드는 응답 상태를 알 수 없게 합니다.
-                await fetch(SCRIPT_URL, {
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
+                    mode: 'no-cors', // CORS 문제 우회
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 
-                showSuccess('저장되었습니다.');
-                // 저장 후 캐시된 최종 주행거리 데이터를 무효화합니다. (다음 차량 선택 시 새로고침 유도)
-                vehiclesKmCache = {};
+                debugLog('POST 응답 받음 (no-cors 모드)');
+                
+                // no-cors 모드에서는 응답을 읽을 수 없으므로 성공으로 간주
+                showSuccess('저장되었습니다. 스프레드시트를 확인해주세요.');
+                vehiclesKmCache = {}; // 캐시 무효화
+                return true;
+                
             } catch (error) {
+                debugLog('POST 오류: ' + error.message);
                 console.error('데이터 전송 오류:', error);
-                showError('데이터 저장에 실패했습니다.');
+                showWarning('데이터 전송 중 오류가 발생했습니다. 스프레드시트를 확인해주세요.');
+                vehiclesKmCache = {};
+                return false;
             } finally {
                 hideLoading();
             }
@@ -245,10 +277,10 @@
         }
 
         function setupEventListeners() {
-            // 차량 선택 시 최종 주행 거리 로드 함수 호출
             document.getElementById('vehicle').addEventListener('change', handleVehicleChange);
             document.getElementById('vehicleLogForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('arrivalKm').addEventListener('input', validateKm);
+            document.getElementById('arrivalTime').addEventListener('change', validateTime);
             
             document.getElementById('setDepartureTimeBtn').addEventListener('click', () => {
                 document.getElementById('departureTime').value = getCurrentTime();
@@ -268,21 +300,31 @@
                 return;
             }
 
-            // 1. 캐시 확인
+            // 캐시 확인
             if (vehiclesKmCache[selectedVehicle] !== undefined) {
                 departureKmInput.value = vehiclesKmCache[selectedVehicle];
+                debugLog('캐시에서 차량 정보 로드: ' + selectedVehicle);
                 return;
             }
 
-            // 2. 캐시에 없으면 네트워크 통신 시작
+            // 네트워크 요청
             showLoading(`차량 ${selectedVehicle}의 최종 주행 거리를 불러오는 중...`);
+            debugLog('차량 정보 GET 요청: ' + selectedVehicle);
+            
             try {
-                // 특정 차량의 최신 주행 거리만 요청하도록 Apps Script를 수정해야 합니다.
-                // 현재 스크립트는 모든 차량 정보를 반환한다고 가정하고, 여기서 필터링합니다.
-                const response = await fetch(SCRIPT_URL);
-                if (!response.ok) throw new Error('데이터 로드에 실패했습니다.');
+                const response = await fetch(`${SCRIPT_URL}?action=getInitialData`);
+                
+                if (!response.ok) {
+                    throw new Error('서버 응답 오류: ' + response.status);
+                }
                 
                 const data = await response.json();
+                debugLog('GET 응답: ' + JSON.stringify(data));
+                
+                if (data.status === 'error') {
+                    throw new Error(data.message);
+                }
+                
                 const vehiclesKmData = data.vehiclesKm || {}; 
                 const lastKm = vehiclesKmData[selectedVehicle] ? vehiclesKmData[selectedVehicle].lastKm : 0;
                 
@@ -292,17 +334,19 @@
                 }
                 
                 departureKmInput.value = lastKm;
+                debugLog(`차량 ${selectedVehicle} 주행거리: ${lastKm}km`);
                 
-                // 차량 드롭다운 텍스트 업데이트 (선택 사항)
+                // 드롭다운 텍스트 업데이트
                 const select = document.getElementById('vehicle');
                 Array.from(select.options).forEach(option => {
                     if (option.value === selectedVehicle) {
-                        let baseText = option.textContent.split(' (')[0];
+                        let baseText = option.textContent.split(' (현재')[0];
                         option.textContent = `${baseText} (현재: ${lastKm.toLocaleString()}km)`;
                     }
                 });
                 
             } catch (error) {
+                debugLog('차량 정보 로드 오류: ' + error.message);
                 console.error('주행 거리 로드 오류:', error);
                 departureKmInput.value = 0;
                 showError('최종 주행 거리 로드에 실패했습니다. 출발 km를 직접 확인하여 입력하세요.');
@@ -321,20 +365,38 @@
             return true;
         }
 
+        function validateTime() {
+            const departureTime = document.getElementById('departureTime').value;
+            const arrivalTime = document.getElementById('arrivalTime').value;
+            
+            if (departureTime && arrivalTime && departureTime > arrivalTime) {
+                showWarning('도착시각이 출발시각보다 빠릅니다. 확인해주세요.');
+                return false;
+            }
+            return true;
+        }
+
         async function handleFormSubmit(e) {
             e.preventDefault();
+            
+            // 유효성 검사
             if (!validateKm()) return;
+            validateTime(); // 경고만 표시
+            
+            const vehicle = document.getElementById('vehicle').value;
+            if (!vehicle) {
+                showError('차량을 선택해주세요.');
+                return;
+            }
             
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
             
             const destination = data.destination.trim();
             
-            // 탑승자 명단 처리 로직
             let passengersInput = data.passengers || '';
             const passengers = passengersInput.split(/[\s,]+/).filter(p => p.trim() !== '');
-            // 인원수는 탑승자 배열의 길이 + 운전자 1명으로 설정
-            const passengerCount = passengers.length + 1; 
+            const passengerCount = passengers.length + 1; // 운전자 포함
             
             const departureKm = parseInt(data.departureKm) || 0;
             const arrivalKm = parseInt(data.arrivalKm) || 0;
@@ -346,7 +408,7 @@
                 passengerCount: passengerCount, 
                 passengers: passengers, 
                 destination: destination,
-                purpose: data.purpose, // 이제 입력 필드에서 값을 가져옵니다.
+                purpose: data.purpose,
                 tripDate: data.tripDate,
                 departureTime: data.departureTime,
                 arrivalTime: data.arrivalTime,
@@ -356,13 +418,16 @@
                 recordDate: new Date().toISOString()
             };
             
-            await postData({ action: 'addLog', data: logData });
+            debugLog('제출할 데이터: ' + JSON.stringify(logData));
             
-            document.getElementById('vehicleLogForm').reset();
-            setCurrentDate();
+            const success = await postData({ action: 'addLog', data: logData });
+            
+            if (success !== false) {
+                document.getElementById('vehicleLogForm').reset();
+                setCurrentDate();
+            }
         }
         
-        // --- 유틸리티 함수들 (Alert, Loading 등) ---
         function showAlert(id, message, duration = 3000) {
             const alert = document.getElementById(id);
             alert.textContent = message;
@@ -370,24 +435,45 @@
             setTimeout(() => alert.classList.remove('show'), duration);
         }
         
-        function showSuccess(message) { showAlert('successAlert', message); }
-        function showError(message) { showAlert('errorAlert', message, 5000); }
+        function showSuccess(message) { 
+            debugLog('성공: ' + message);
+            showAlert('successAlert', message); 
+        }
+        
+        function showError(message) { 
+            debugLog('오류: ' + message);
+            showAlert('errorAlert', message, 5000); 
+        }
+        
+        function showWarning(message) { 
+            debugLog('경고: ' + message);
+            showAlert('warningAlert', message, 5000); 
+        }
         
         function showLoading(message) {
-            let loadingDiv = document.getElementById('loadingOverlay');
-            if (!loadingDiv) {
-                loadingDiv = document.createElement('div');
-                loadingDiv.id = 'loadingOverlay';
-                loadingDiv.style = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); color: white; display: flex; align-items: center; justify-content: center; z-index: 9999; font-size: 1.2rem;`;
-                document.body.appendChild(loadingDiv);
-            }
-            loadingDiv.innerHTML = `<div class="loading-spinner"></div> ${message}`;
+            const loadingDiv = document.getElementById('loadingOverlay');
+            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.textContent = message;
             loadingDiv.style.display = 'flex';
+            document.getElementById('submitBtn').disabled = true;
+            debugLog('로딩 표시: ' + message);
         }
 
         function hideLoading() {
             const loadingDiv = document.getElementById('loadingOverlay');
-            if (loadingDiv) loadingDiv.style.display = 'none';
+            loadingDiv.style.display = 'none';
+            document.getElementById('submitBtn').disabled = false;
+            debugLog('로딩 숨김');
+        }
+        
+        function debugLog(message) {
+            if (DEBUG_MODE) {
+                const debugInfo = document.getElementById('debugInfo');
+                const timestamp = new Date().toLocaleTimeString();
+                debugInfo.textContent = `[${timestamp}] ${message}\n` + debugInfo.textContent;
+                debugInfo.classList.add('show');
+            }
+            console.log('[DEBUG] ' + message);
         }
     </script>
 </body>
