@@ -422,7 +422,11 @@
             
             const success = await postData({ action: 'addLog', data: logData });
             
-            if (success !== false) {
+            const success = await postData({ action: 'addLog', data: logData });
+            
+            if (success === true) { // 명시적으로 true를 확인
+                // postData 내부에서 showSuccess를 호출하므로, 
+                // 여기서는 폼 초기화만 수행
                 document.getElementById('vehicleLogForm').reset();
                 setCurrentDate();
             }
@@ -478,4 +482,5 @@
     </script>
 </body>
 </html>
+
 
